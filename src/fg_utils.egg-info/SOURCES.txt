@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+src/fg_utils/__init__.py
+src/fg_utils/format.py
+src/fg_utils/spec.py
+src/fg_utils/utilities.py
+src/fg_utils.egg-info/PKG-INFO
+src/fg_utils.egg-info/SOURCES.txt
+src/fg_utils.egg-info/dependency_links.txt
+src/fg_utils.egg-info/top_level.txt
+src/fg_utils/utils/spec_manipulation.py

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fg_utils"
+authors = [
+    {name = "Francesco Guarneri", email = "francesco.guarneri.sw@gmail.com"},
+]
+description = "Collection of utilities to manipulate spectra. Spaghetti code, and WIP in general!"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+
+]
+version = "0.0.1"
