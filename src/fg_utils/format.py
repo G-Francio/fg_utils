@@ -2,7 +2,7 @@
 # Actual FITS parsing: retrieves information based on the instrument.  #
 # Same structure, sometimes cards have different names thus different  #
 # functions.                                                           #
-# Works provided an instrument is given, otherwhise it can't set the   #
+# Works provided an instrument is given, otherwise it can't set the    #
 # correct cards.                                                       #
 # -------------------------------- ** -------------------------------- #
 
@@ -13,6 +13,16 @@ from .utilities import AA, adm
 
 
 def _revIVar(x, m):
+    """
+    Helper function to calculate the inverse variance with a minimum value.
+
+    Parameters:
+        x (float): Input value.
+        m (float): Minimum value.
+
+    Returns:
+        float: Inverse variance with a minimum value.
+    """
     if x == 0 or x < 0:
         return m
     return np.sqrt(1 / x)
@@ -20,7 +30,15 @@ def _revIVar(x, m):
 
 def parse_common_fits(hdul, name, has_err=False):
     """
-    Parses information from a given HDU, for data produced at WFCCD
+    Parses information from a given HDU, for data produced at WFCCD.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+        has_err (bool): Whether the FITS file has error information.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     start = hdul[0].header["CRVAL1"]
     step = hdul[0].header["CDELT1"]
@@ -28,9 +46,9 @@ def parse_common_fits(hdul, name, has_err=False):
     corr = hdul[0].header["CRPIX1"]
 
     wave = (np.arange(1, total + 1) - corr) * step + start
-    flux = hdul[0].data[0]
+    flux = hdul[0].data
     if has_err:
-        err = hdul[0].data[1]
+        err = hdul[0].data
     else:
         err = flux * 0.1
 
@@ -39,7 +57,14 @@ def parse_common_fits(hdul, name, has_err=False):
 
 def parse_fire(hdul, name):
     """
-    Parses information from a given HDU, for data produced at FIRE
+    Parses information from a given HDU, for data produced at FIRE.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     data = hdul[5].data
 
@@ -52,7 +77,14 @@ def parse_fire(hdul, name):
 
 def parse_lrs(hdul, name):
     """
-    Parses information from a given HDU, for data produced at TNG LRS
+    Parses information from a given HDU, for data produced at TNG LRS.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     start = hdul[0].header["CRVAL1"]
     step = hdul[0].header["CDELT1"]
@@ -60,9 +92,7 @@ def parse_lrs(hdul, name):
     corr = hdul[0].header["CRPIX1"]
 
     wave = (np.arange(1, total + 1) - corr) * step + start
-    r_wav = np.argwhere((wave >= 3700) & (wave <= 8000))  # reduced_wave,
-    # TNG spectra are very noisy at the extremes of the wavelength range
-    # We leave this one out for convenience and clarity
+    r_wav = np.argwhere((wave >= 3700) & (wave <= 8000))
 
     wave = wave[r_wav][:, 0]
     flux = hdul[0].data[r_wav][:, 0]
@@ -76,6 +106,13 @@ def parse_generic(hdul, name):
     Parses information from a generic HDU. Will fail most of the time,
     for every fail I will try to improve the function. This handles
     calibrated Gaia spectra at the minimum.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     wave = hdul[1].data["wave"]
     flux = hdul[1].data["flux"]
@@ -87,8 +124,14 @@ def parse_generic(hdul, name):
 def parse_sdss(hdul, name):
     """
     Parses information from SDSS spectra.
-    """
 
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
+    """
     data = np.array([np.array(i) for i in hdul[1].data])
 
     flux = data[:, 0]
@@ -101,6 +144,13 @@ def parse_sdss(hdul, name):
 def parse_lamost(hdul, name):
     """
     Parses information from LAMOST spectra.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     data = np.array([np.array(i) for i in hdul[0].data])
 
@@ -113,7 +163,14 @@ def parse_lamost(hdul, name):
 
 def parse_astrocook_fits(hdul, name):
     """
-    Parses information from spectra produced by Astrocook in fits format
+    Parses information from spectra produced by Astrocook in fits format.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     data = hdul[1].data
 
@@ -135,7 +192,14 @@ def parse_astrocook_fits(hdul, name):
 
 def alt_parse_6df(hdul, name):
     """
-    Parses information from spectra downloaded by 6dfGS
+    Parses information from spectra downloaded by 6dfGS.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     data = hdul[7].data
 
@@ -147,7 +211,14 @@ def alt_parse_6df(hdul, name):
 
 def parse_2df_6df(hdul, name):
     """
-    Parses information from spectra downloaded by 6dfGS
+    Parses information from spectra downloaded by 6dfGS.
+
+    Parameters:
+        hdul: Header Data Unit List representing the FITS file.
+        name (str): The name of the spectrum.
+
+    Returns:
+        gspec: An instance of the generic_spectrum class.
     """
     try:
         hdul[7].data
@@ -159,7 +230,7 @@ def parse_2df_6df(hdul, name):
         corr = hdul[0].header["CRPIX1"]
 
         # Transform flux, should not matter for redshift identification but might
-        #  as well consider it
+        # as well consider it
         BZERO = hdul[0].header["BZERO"]
         BSCALE = hdul[0].header["BSCALE"]
 
